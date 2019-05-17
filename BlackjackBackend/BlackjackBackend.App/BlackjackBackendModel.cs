@@ -55,17 +55,26 @@ namespace App
         protected System.Collections.Generic.List<int> _hand;
         protected int _id;
         protected bool _isNPC;
+        protected System.Collections.Generic.List<int> _secondHand;
 
         public Dealer(int id)
         {
             _hand = new System.Collections.Generic.List<int>();
             _id = id;
             _isNPC = true;
+            _secondHand = new System.Collections.Generic.List<int>();
         }
 
-        public void AddCard(int newCard)
+        public void AddCard(int newCard, int whichHand = 1)
         {
-            _hand.Add(newCard);
+            if(whichHand == 1)
+            {
+                _hand.Add(newCard);
+            }
+            else
+            {
+                _secondHand.Add(newCard);
+            }
         }
 
         public void ResetHand()
@@ -93,6 +102,8 @@ namespace App
     {
         int _money; // floats later for cent bets?
         int _currentBet;
+        bool _isSplitting;
+        int _secondBet;
 
         public Player(bool isNPC, int startingMoney, int id) : base(id)
         {
@@ -100,6 +111,9 @@ namespace App
             _currentBet = 0;
             _hand = new System.Collections.Generic.List<int>();
             _isNPC = isNPC;
+            _isSplitting = false;
+            _secondHand = new System.Collections.Generic.List<int>();
+            _secondBet = 0;
         }
 
         public bool SetBet(int bet)
@@ -121,9 +135,23 @@ namespace App
         {
             if (won)
             {
-                _money += 2 * _currentBet;
+                _money += 2 * (_currentBet + _secondBet);
             }
             _currentBet = 0;
+            _secondBet = 0;
+        }
+
+        public void Split()
+        {
+            if(_hand.Count != 2)
+            {
+                throw new System.InvalidOperationException("player cannot split");
+            }
+            _secondHand.Add(_hand[1]);
+            _hand.RemoveAt(1);
+            _secondBet = _currentBet;
+            _money -= _secondBet;
+            _isSplitting = true;
         }
 
         public int Money

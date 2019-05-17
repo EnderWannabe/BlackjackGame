@@ -74,12 +74,16 @@ namespace App
         ///<param name="id">A valid PlayerID</param>
         ///<exception>throws System.Exception if the player to hit has already busted</exception>
         ///<returns>a tuple between the card, 0-51, and a bool representing if the card is faceup </returns> 
-        public System.Tuple<int, bool> DealCardToPlayer(int id)
+        public System.Tuple<int, bool> DealCardToPlayer(int id, int whichHand = 1)
         {
             Dealer p = _idToDealer[id];
             if (DetermineHandValue(p.Hand) > 21)
             {
                 throw new System.Exception("We should not be dealing cards to player's who have already busted");
+            }
+            if(whichHand == 2 && !p.IsSplitting)
+            {
+                throw new System.Exception("Dealt card to second hand when player was not splitting");
             }
             int card = _deck.NextCard;
             bool faceup = true;
@@ -87,7 +91,7 @@ namespace App
             {
                 faceup = false;
             }
-            p.AddCard(card);
+            p.AddCard(card, whichHand);
             return System.Tuple.Create(card, faceup);
         }
 
@@ -193,6 +197,18 @@ namespace App
             }
             _deck.Reset();
             return returnDict;
+        }
+
+        ///<param name="id">A valid PlayerID</param>
+        ///<returns> true if the player with id int id can split their current hand or not </returns>
+        public bool CanSplit(int id)
+        {
+            System.Collections.Generic.List<int> hand = _idToDealer[id].Hand;
+            if(hand.Count != 2)
+            {
+                return false;
+            }
+            return hand[0] % 13 == hand[1] % 13;
         }
 
         public System.Collections.Generic.List<int> GetCardsInHand(int id)

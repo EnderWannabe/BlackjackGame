@@ -3093,7 +3093,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 0.85
-  m_Text: "Blackjack\nBy Alex Dave Mickey and Aaron\x13 (ADAM)"
+  m_Text: Blackjack
 --- !u!114 &429013202
 MonoBehaviour:
   m_ObjectHideFlags: 0
